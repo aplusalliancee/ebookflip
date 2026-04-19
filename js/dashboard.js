@@ -75,7 +75,7 @@ function renderEbooks() {
     <div class="ebook-card" onclick="openPreview(${b.id})">
       <div class="ebook-thumb" style="background:${b.bg}">
         ${hasCover
-          ? `<img class="ebook-cover" src="../${b.cover}" alt="${b.name}" loading="lazy">`
+          ? `<img class="ebook-cover" src="/ebookflip/${b.cover}" alt="${b.name}" loading="lazy">`
           : `<span>${b.emoji}</span>`}
         <div class="ebook-niche-tag">${b.niche}</div>
       </div>
@@ -109,7 +109,7 @@ function openPreview(id) {
   const preview = book.previewText || '(Preview not available)';
 
   document.getElementById('modal-cover-area').innerHTML = hasCover
-    ? `<img class="modal-cover" src="../${book.cover}" alt="${book.name}">`
+    ? `<img class="modal-cover" src="/ebookflip/${book.cover}" alt="${book.name}">`
     : `<div class="modal-cover-emoji">${book.emoji}</div>`;
 
   document.getElementById('modal-title').textContent = book.name;
