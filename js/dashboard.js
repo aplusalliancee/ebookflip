@@ -116,7 +116,7 @@ function openPreview(id) {
   document.getElementById('modal-meta').innerHTML = `
     <span class="meta-tag">${book.niche}</span>
     <span class="meta-tag">${book.pages}</span>
-    <span class="meta-tag">Suggested price: ${book.price}</span>
+    <span class="meta-tag">Price: ${book.regularPrice ? `<span style="text-decoration:line-through;opacity:0.6;margin-right:4px">${book.regularPrice}</span>` : ''}${book.price}</span>
     <span class="meta-tag">Full PLR</span>`;
   document.getElementById('modal-desc').textContent = book.desc;
   document.getElementById('modal-toc').innerHTML = `

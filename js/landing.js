@@ -59,7 +59,7 @@ setInterval(updateClock, 30000);
         <div class="prod-body">
           <div class="prod-name">${b.name}</div>
           <div class="prod-niche">${b.niche}</div>
-          <div class="prod-badge">${b.price} suggested retail</div>
+          <div class="prod-badge">${b.regularPrice ? `<span style="text-decoration:line-through;opacity:0.6;margin-right:8px">${b.regularPrice}</span>` : ''}${b.price}</div>
         </div>
       </div>`;
   }).join('');
