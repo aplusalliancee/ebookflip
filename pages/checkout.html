@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout – EbookFlip</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/checkout.css">
+<!-- ══ STRIPE JS ═══════════════════════════════════════════ -->
+<script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<nav id="main-nav">
+  <a class="logo" href="../index.html">Ebook<span>Flip</span></a>
+  <div class="nav-right">
+    <a class="nav-link" href="../index.html">← Back</a>
+  </div>
+</nav>
+
+<div class="checkout-page">
+  <div class="checkout-card">
+    <h2>Complete Purchase</h2>
+    <p class="checkout-sub">You're one step away from your entire library</p>
+
+    <!-- Plan summary -->
+    <div class="plan-summary" id="plan-summary">
+      <div class="ps-row">
+        <div>
+          <div class="ps-name" id="ps-name">Pro Bundle</div>
+          <div class="ps-desc" id="ps-desc">1,000+ templates · Full PLR · Instant access</div>
+        </div>
+        <div class="ps-price" id="ps-price">$97</div>
+      </div>
+      <div class="ps-features" id="ps-features"></div>
+    </div>
+
+    <!-- Payment form -->
+    <div class="form-group">
+      <label>Cardholder Name</label>
+      <input type="text" id="card-name" placeholder="Name on card">
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         STRIPE CARD ELEMENT mounts here.
+         DO NOT put anything else inside #card-element.
+         ════════════════════════════════════════════════ -->
+    <div class="form-group">
+      <label>
+        Card Details
+        <span class="test-hint">— test: 4242 4242 4242 4242 · any future date · any CVC</span>
+      </label>
+      <div id="card-element" class="stripe-element"></div>
+    </div>
+
+    <div id="card-errors" class="card-error-msg"></div>
+
+    <button class="form-submit" id="pay-btn" onclick="handlePayment()">
+      Pay Now &amp; Get Instant Access →
+    </button>
+
+    <div class="stripe-badge">
+      <span>🔒</span> Secured by Stripe · 256-bit SSL encryption · 30-day money-back guarantee
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-title"></div>
+  <div class="toast-sub"   id="toast-sub"></div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   STRIPE SETUP — READ THIS CAREFULLY
+   ══════════════════════════════════════════════════════════
+
+   STEP 1:  Sign up at https://stripe.com
+   STEP 2:  Go to Developers → API keys
+   STEP 3:  Copy your PUBLISHABLE KEY (starts with pk_live_ or pk_test_)
+   STEP 4:  Replace the string below with your real key.
+
+   YOUR PUBLISHABLE KEY (safe to put in frontend):
+   ──────────────────────────────────────────────── */
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_REPLACE_WITH_YOUR_KEY';
+/*  ────────────────────────────────────────────────
+    ⚠️  NEVER put your SECRET KEY here (sk_test_...)
+        The secret key goes in your SERVER only.
+
+   STEP 5:  Create a backend endpoint (see BACKEND SETUP below)
+   STEP 6:  Set your BACKEND URL:                              */
+const BACKEND_URL = 'https://your-backend.com/create-payment-intent';
+/*  ────────────────────────────────────────────────
+    For a quick backend, see the README.md file
+    for a ready-to-deploy Vercel / Express snippet.
+   ══════════════════════════════════════════════════════════ */
+
+/* Guard: must be logged in to checkout */
+(function() {
+  const u = Auth.getCurrentUser();
+  if (!u) { window.location.href = 'login.html?redirect=checkout'; }
+})();
+
+/* Plan from URL */
+const urlPlan = new URLSearchParams(window.location.search).get('plan') || 'pro';
+const PLANS = {
+  pro:     { name: 'Pro Bundle',  price: '$97',  amount: 9700,  desc: '1,000+ templates · Full PLR · Instant access · Monthly updates', features: ['1,000+ eBook Templates','Full Private Label Rights','Instant Download Access','Monthly New Templates','Done-for-You Sales Pages'] },
+  starter: { name: 'Starter',     price: '$47',  amount: 4700,  desc: '250 templates · Full PLR · Instant access', features: ['250 eBook Templates','Full Private Label Rights','Instant Download Access'] }
+};
+const plan = PLANS[urlPlan] || PLANS.pro;
+
+/* Populate summary */
+document.getElementById('ps-name').textContent  = plan.name;
+document.getElementById('ps-price').textContent = plan.price;
+document.getElementById('ps-desc').textContent  = plan.desc;
+document.getElementById('ps-features').innerHTML = plan.features.map(f =>
+  `<div class="ps-feat"><span class="ps-ck">✓</span>${f}</div>`
+).join('');
+
+/* ── Stripe initialisation ── */
+let stripe, cardElement, stripeReady = false;
+
+(function initStripe() {
+  if (STRIPE_PUBLISHABLE_KEY === 'pk_test_REPLACE_WITH_YOUR_KEY') {
+    /* Demo mode — Stripe key not set yet */
+    document.getElementById('card-element').innerHTML =
+      `<div class="stripe-demo-msg">
+        ⚠️ Add your Stripe publishable key to pages/checkout.html to enable real payments.<br>
+        <a href="../SETUP.md" style="color:var(--accent)">See SETUP.md for instructions →</a>
+       </div>`;
+    return;
+  }
+
+  stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+  const elements = stripe.elements({
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary:     '#d4f542',
+        colorBackground:  '#18181c',
+        colorText:        '#eeede6',
+        colorDanger:      '#f07a7a',
+        borderRadius:     '8px',
+        fontFamily:       'DM Sans, sans-serif',
+        spacingUnit:      '4px',
+      }
+    }
+  });
+
+  cardElement = elements.create('card', {
+    style: { base: { fontSize: '14px', color: '#eeede6', '::placeholder': { color: '#7a7975' } } }
+  });
+  cardElement.mount('#card-element');
+  cardElement.on('change', e => {
+    document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+  });
+  stripeReady = true;
+})();
+
+/* ── Handle payment ── */
+async function handlePayment() {
+  const btn  = document.getElementById('pay-btn');
+  const name = document.getElementById('card-name').value.trim();
+  const errEl = document.getElementById('card-errors');
+
+  if (!name) { errEl.textContent = 'Please enter the cardholder name.'; return; }
+  errEl.textContent = '';
+
+  /* Demo mode (no Stripe key) — simulate success */
+  if (!stripeReady) {
+    btn.textContent = 'Processing…';
+    btn.disabled    = true;
+    await new Promise(r => setTimeout(r, 1800));
+    completePurchase();
+    return;
+  }
+
+  btn.textContent = 'Processing…';
+  btn.disabled    = true;
+
+  try {
+    /* ────────────────────────────────────────────────────
+       Call your backend to create a PaymentIntent.
+       Your backend returns { clientSecret: "pi_xxx_secret_xxx" }
+       See SETUP.md for the server code.
+       ──────────────────────────────────────────────── */
+    const res = await fetch(BACKEND_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ amount: plan.amount, currency: 'usd', plan: urlPlan })
+    });
+    const { clientSecret, error: serverError } = await res.json();
+
+    if (serverError) throw new Error(serverError);
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card:            cardElement,
+        billing_details: { name }
+      }
+    });
+
+    if (error) {
+      errEl.textContent = error.message;
+      btn.textContent   = 'Pay Now & Get Instant Access →';
+      btn.disabled      = false;
+    } else if (paymentIntent.status === 'succeeded') {
+      completePurchase();
+    }
+  } catch (e) {
+    errEl.textContent = 'Payment failed. Please try again or contact support.';
+    btn.textContent   = 'Pay Now & Get Instant Access →';
+    btn.disabled      = false;
+    console.error(e);
+  }
+}
+
+function completePurchase() {
+  Auth.setPlan(urlPlan);
+  showToast('Payment successful! 🎉', 'Your library is unlocked. Start downloading!');
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+}
+</script>
+</body>
+</html>

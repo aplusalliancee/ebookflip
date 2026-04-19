@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard – EbookFlip</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<div class="dash-nav">
+  <div class="dash-logo">Ebook<span>Flip</span></div>
+  <div class="dash-user">
+    <span>Welcome back, <span class="dash-user-name" id="dash-username">Creator</span></span>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- ── BODY ── -->
+<div class="dash-body">
+
+  <div class="dash-welcome">
+    <h1>Your Digital Library</h1>
+    <p>Click any template to preview it. Download, brand it as yours, and start selling.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="dash-stats">
+    <div class="dstat">
+      <div class="dstat-label">Templates Available</div>
+      <div class="dstat-val" id="stat-count">—</div>
+      <div class="dstat-sub">Ready to download &amp; sell</div>
+    </div>
+    <div class="dstat">
+      <div class="dstat-label">Niches Covered</div>
+      <div class="dstat-val">12</div>
+      <div class="dstat-sub">High-demand categories</div>
+    </div>
+    <div class="dstat">
+      <div class="dstat-label">Avg Sell Price</div>
+      <div class="dstat-val">$42</div>
+      <div class="dstat-sub">Per template</div>
+    </div>
+    <div class="dstat">
+      <div class="dstat-label">Potential Revenue</div>
+      <div class="dstat-val" id="stat-potential">—</div>
+      <div class="dstat-sub">Sell each template once</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="dash-controls">
+    <div class="dash-section-title">All Templates</div>
+    <input
+      class="search-bar"
+      type="text"
+      placeholder="Search templates…"
+      oninput="filterEbooks(this.value)"
+    >
+  </div>
+
+  <!-- Filter pills (built by JS) -->
+  <div class="filter-row" id="filter-row"></div>
+
+  <!-- Ebook cards (built by JS) -->
+  <div class="ebook-grid" id="ebook-grid">
+    <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0">
+      Loading your library…
+    </div>
+  </div>
+
+</div><!-- /dash-body -->
+
+<!-- ── PREVIEW MODAL ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Template Preview</div>
+      <button class="modal-close" onclick="closePreview()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-cover-area"></div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <p class="modal-desc" id="modal-desc"></p>
+      <div id="modal-toc"></div>
+      <div id="modal-preview" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-download-btn" id="modal-dl-btn">⬇ Download This Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOCKED OVERLAY ── -->
+<div class="locked-overlay" id="locked-overlay" style="display:none">
+  <div class="locked-box">
+    <h2>Unlock Your Library</h2>
+    <p>Create your account ✓ — now unlock access to 1,000+ premium eBook templates with full resell rights and keep 100% of every sale.</p>
+    <div class="locked-plans">
+      <a class="pbtn gh" href="checkout.html?plan=starter">Starter — $47</a>
+      <a class="pbtn ac" href="checkout.html?plan=pro">Pro Bundle — $97</a>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px">
+      30-day money-back guarantee · Instant access after payment
+    </p>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-title"></div>
+  <div class="toast-sub"   id="toast-sub"></div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../data/ebooks.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

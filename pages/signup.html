@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account – EbookFlip</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+
+<nav id="main-nav">
+  <a class="logo" href="../index.html">Ebook<span>Flip</span></a>
+  <div class="nav-right">
+    <a class="nav-link" href="../index.html">← Home</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Create Account</h2>
+    <p class="subtitle">Start selling digital products today — takes 30 seconds</p>
+
+    <div class="auth-error"   id="signup-error"></div>
+    <div class="auth-success" id="signup-success"></div>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="signup-name" placeholder="Your Name" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" placeholder="Create a strong password" autocomplete="new-password">
+    </div>
+
+    <button class="form-submit" onclick="doSignup()">Create Account →</button>
+
+    <div class="auth-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-title"></div>
+  <div class="toast-sub"   id="toast-sub"></div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script>
+  /* If already logged in, redirect */
+  (function() {
+    const u = Auth.getCurrentUser();
+    if (u && u.plan) { window.location.href = 'dashboard.html'; }
+  })();
+
+  const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
+
+  function doSignup() {
+    const name  = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const pass  = document.getElementById('signup-password').value;
+    const err   = document.getElementById('signup-error');
+    const ok    = document.getElementById('signup-success');
+
+    err.style.display = 'none';
+    ok.style.display  = 'none';
+
+    const result = Auth.signup(name, email, pass);
+    if (result.ok) {
+      ok.textContent  = 'Account created! Redirecting to checkout…';
+      ok.style.display = 'block';
+      setTimeout(() => {
+        window.location.href = 'checkout.html?plan=' + plan;
+      }, 900);
+    } else {
+      err.textContent  = result.error;
+      err.style.display = 'block';
+    }
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doSignup(); });
+</script>
+</body>
+</html>
