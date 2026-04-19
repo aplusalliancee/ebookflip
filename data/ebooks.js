@@ -17,8 +17,7 @@
               Example: "assets/images/covers/wealth-blueprint.jpg"
               Recommended size: 420×280px, PNG or JPG
               Leave as "" or null to show emoji instead.
-   regularPrice → (OPTIONAL) original price shown crossed out (e.g. "$139")
-   price    → sale price shown prominently (e.g. "$49")
+   price    → suggested resell price shown in preview modal
    tableOfContents → array of chapter titles shown in preview
    previewText     → the first few lines shown in the preview panel
 
@@ -55,8 +54,7 @@ const EBOOKS = [
     bg: "#1a1f12",
     cover: "",          /* ← set to "assets/images/covers/wealth-blueprint.jpg" to use an image */
     file: "",           /* ← set to "assets/files/wealth-blueprint.pdf" to use a real PDF */
-    regularPrice: "$139",  /* ← original price (crossed out) */
-    price: "$49",       /* ← sale price shown prominently */
+    price: "$47",
     tableOfContents: [
       "1. The Wealth Mindset",
       "2. Budgeting for Growth",
