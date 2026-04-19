@@ -52,7 +52,7 @@ const EBOOKS = [
     desc: "A complete roadmap to building multiple income streams and investing for long-term wealth.",
     pages: "47 pages",
     bg: "#1a1f12",
-    cover: "assets/images/image.png",          /* ← set to "assets/images/covers/wealth-blueprint.jpg" to use an image */
+    cover: "assets/images/covers/wealth-blueprint.jpg",          /* ← set to "assets/images/covers/wealth-blueprint.jpg" to use an image */
     file: "",           /* ← set to "assets/files/wealth-blueprint.pdf" to use a real PDF */
     price: "$47",
     tableOfContents: [
