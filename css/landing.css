@@ -175,7 +175,7 @@
 
 /* ── PRICING ── */
 .pricing-section { max-width: 1180px; margin: 0 auto; padding: 80px 6%; }
-.price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+.price-grid { display: flex; justify-content: center; margin-top: 44px; }
 .pcard { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 34px 28px; position: relative; }
 .pcard.featured { border-color: rgba(212,245,66,0.45); background: linear-gradient(180deg,rgba(212,245,66,0.04) 0%,var(--bg2) 70%); }
 .pop-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #0b0b0d; font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 800; padding: 4px 18px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
@@ -202,7 +202,7 @@
 .dark-btn:hover { opacity: 0.82; }
 
 @media (max-width: 860px) {
-  .value-strip, .phone-inner, .price-grid { grid-template-columns: 1fr; gap: 40px; }
+  .value-strip, .phone-inner { grid-template-columns: 1fr; gap: 40px; }
   .steps-grid, .testi-grid { grid-template-columns: 1fr; }
   .logos-row { gap: 18px; }
 }
