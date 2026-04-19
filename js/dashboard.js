@@ -153,7 +153,7 @@ function downloadEbook(id) {
     /* ── Option B: if a real file path is set, download it directly ── */
     if (book.file && book.file.trim() !== '') {
       const a = document.createElement('a');
-      a.href     = '../' + book.file;
+      a.href     = '/ebookflip/' + book.file;
       a.download = '';
       document.body.appendChild(a);
       a.click();

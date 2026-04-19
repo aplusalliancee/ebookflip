@@ -21,7 +21,7 @@ setInterval(updateClock, 30000);
     return `
       <div class="book-card" style="background:${book.bg}">
         ${hasCover
-          ? `<img class="cover" src="../${book.cover}" alt="${book.name}" loading="lazy">`
+          ? `<img class="cover" src="/ebookflip/${book.cover}" alt="${book.name}" loading="lazy">`
           : `<span class="book-emoji">${book.emoji}</span>`
         }
         <div class="book-title">${book.name}</div>
@@ -54,7 +54,7 @@ setInterval(updateClock, 30000);
     return `
       <div class="prod-card">
         <div class="prod-thumb" style="background:${b.bg}">
-          ${hasCover ? `<img src="../${b.cover}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover">` : b.emoji}
+          ${hasCover ? `<img src="/ebookflip/${b.cover}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover">` : b.emoji}
         </div>
         <div class="prod-body">
           <div class="prod-name">${b.name}</div>
